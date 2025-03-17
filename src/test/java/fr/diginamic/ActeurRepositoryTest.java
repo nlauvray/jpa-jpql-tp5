@@ -32,7 +32,7 @@ public class ActeurRepositoryTest {
 	@Test
 	public void testExtraireActeursTriesParIdentite() {
 
-		TypedQuery<Acteur> query = em.createQuery("SELECT a FROM Acteur a", Acteur.class);
+		TypedQuery<Acteur> query = em.createQuery("SELECT a FROM Acteur a ORDER BY a.identite", Acteur.class);
 		List<Acteur> acteurs = query.getResultList();
 
 		assertEquals(1137, acteurs.size());
@@ -44,7 +44,7 @@ public class ActeurRepositoryTest {
 	 */
 	@Test
 	public void testExtraireActeursParIdentite() {
-		TypedQuery<Acteur> query = em.createQuery("SELECT a FROM Acteur a", Acteur.class);
+		TypedQuery<Acteur> query = em.createQuery("SELECT a FROM Acteur a WHERE a.identite = 'Marion Cotillard'", Acteur.class);
 		List<Acteur> acteurs = query.getResultList();
 
 		assertEquals(1, acteurs.size());
@@ -57,19 +57,18 @@ public class ActeurRepositoryTest {
 	 */
 	@Test
 	public void testExtraireActeursParAnneeNaissance() {
-		TypedQuery<Acteur> query = em.createQuery("SELECT a FROM Acteur a", Acteur.class);
+		TypedQuery<Acteur> query = em.createQuery("SELECT a FROM Acteur a WHERE YEAR(a.anniversaire) = 1985", Acteur.class);
 		List<Acteur> acteurs = query.getResultList();
 
 		assertEquals(10, acteurs.size());
 	}
-
 	/**
 	 * Extraire la liste des actrices ayant joué le rôle d'Harley Quinn
 	 */
 	@Test
 	public void testExtraireActeursParRole() {
 
-		TypedQuery<Acteur> query = em.createQuery("SELECT a FROM Acteur a", Acteur.class);
+		TypedQuery<Acteur> query = em.createQuery("SELECT a FROM Acteur a JOIN a.roles r WHERE r.nom = 'Harley Quinn'", Acteur.class);
 		List<Acteur> acteurs = query.getResultList();
 
 		assertEquals(1, acteurs.size());
@@ -81,7 +80,7 @@ public class ActeurRepositoryTest {
 	 */
 	@Test
 	public void testExtraireActeursParFilmParuAnnee() {
-		TypedQuery<Acteur> query = em.createQuery("SELECT a FROM Acteur a", Acteur.class);
+		TypedQuery<Acteur> query = em.createQuery("SELECT a FROM Acteur a JOIN a.roles r JOIN r.film f WHERE f.annee = 2015", Acteur.class);
 		List<Acteur> acteurs = query.getResultList();
 		assertEquals(119, acteurs.size());
 	}
@@ -91,7 +90,7 @@ public class ActeurRepositoryTest {
 	 */
 	@Test
 	public void testExtraireActeursParPays() {
-		TypedQuery<Acteur> query = em.createQuery("SELECT a FROM Acteur a", Acteur.class);
+		TypedQuery<Acteur> query = em.createQuery("SELECT a FROM Acteur a JOIN a.roles r JOIN r.film f JOIN f.pays p WHERE p.nom = 'France'", Acteur.class);
 		List<Acteur> acteurs = query.getResultList();
 		assertEquals(158, acteurs.size());
 	}
@@ -102,7 +101,7 @@ public class ActeurRepositoryTest {
 	 */
 	@Test
 	public void testExtraireActeursParListePaysEtAnnee() {
-		TypedQuery<Acteur> query = em.createQuery("SELECT a FROM Acteur a", Acteur.class);
+		TypedQuery<Acteur> query = em.createQuery("SELECT a FROM Acteur a JOIN a.roles r JOIN r.film f JOIN f.pays p WHERE p.nom = 'France' AND f.annee = 2017", Acteur.class);
 		List<Acteur> acteurs = query.getResultList();
 		assertEquals(24, acteurs.size());
 	}
@@ -113,17 +112,17 @@ public class ActeurRepositoryTest {
 	 */
 	@Test
 	public void testExtraireParRealisateurEntreAnnee() {
-		TypedQuery<Acteur> query = em.createQuery("SELECT a FROM Acteur a", Acteur.class);
+		TypedQuery<Acteur> query = em.createQuery("SELECT a FROM Acteur a JOIN a.roles r JOIN r.film f JOIN f.realisateurs r2 WHERE r2.identite = 'Ridley Scott' AND f.annee BETWEEN 2010 AND 2020", Acteur.class);
 		List<Acteur> acteurs = query.getResultList();
 		assertEquals(27, acteurs.size());
 	}
-	
+
 	/**
 	 * Extraire la liste de tous les réalisateurs ayant réalisé un film dans lequel Brad Pitt a joué
 	 */
 	@Test
 	public void testExtraireRealisateursParActeur() {
-		TypedQuery<Realisateur> query = em.createQuery("SELECT r FROM Realisateur r", Realisateur.class);
+		TypedQuery<Realisateur> query = em.createQuery("SELECT r FROM Realisateur r JOIN r.films f JOIN f.roles r2 JOIN r2.acteur a WHERE a.identite = 'Brad Pitt'", Realisateur.class);
 		List<Realisateur> acteurs = query.getResultList();
 		assertEquals(6, acteurs.size());
 	}
